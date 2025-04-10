@@ -1,36 +1,45 @@
-// Load environment variables from .env (like MONGO_URI, PORT, JWT_SECRET)
+// Load environment variables (MONGO_URI, JWT_SECRET, PORT, etc.)
 const dotenv = require('dotenv');
 dotenv.config();
 
-// Import required modules
+// Import core modules
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-// Import your auth routes (no parentheses — it's a router object, not a function)
+// Import route handlers
 const authRoutes = require('./routes/authRoutes');
 
-// Create the express app
+// Create the Express app
 const app = express();
 
-// Middleware
-app.use(cors());              // Allow requests from frontend (React)
-app.use(express.json());      // Parse JSON bodies from incoming requests
+// Global Middleware
+app.use(cors());               // Enable Cross-Origin requests
+app.use(express.json());       // Parse incoming JSON requests
 
-// Route setup — handle /api/auth/login and /register
-app.use('/api/auth', authRoutes); // ✅ Don't add () here
+// Routes
+app.use('/api/auth', authRoutes); // All auth routes prefixed with /api/auth
 
-// Connect to MongoDB and start the server
+// Root route (optional — helps test if backend is up)
+app.get('/', (req, res) => {
+  res.send('API is running...');
+});
+
+// Connect to MongoDB and launch server
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log('✅ MongoDB connected');
 
-    const port = process.env.PORT || 5000;
-    app.listen(port, () => {
-      console.log(`🚀 Server running on port ${port}`);
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
     console.error('❌ MongoDB connection error:', err);
   });
+
