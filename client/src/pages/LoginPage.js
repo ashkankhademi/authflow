@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // ⬅️ Add this
+import './LoginPage.css'; // Import custom CSS file for styling
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // ⬅️ Initialize navigator
+  const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -14,27 +14,48 @@ const LoginPage = () => {
         email,
         password,
       });
-
-      localStorage.setItem('token', res.data.token);
+      console.log('Login success:', res.data);
       alert('✅ Login successful');
-      navigate('/dashboard'); // ⬅️ Redirect to protected page
+      localStorage.setItem('token', res.data.token);
     } catch (err) {
       console.error('Login error:', err.response?.data?.message || err.message);
-      alert('❌ Login failed');
+      setError('❌ Login failed');
     }
   };
 
   return (
-    <form onSubmit={handleLogin}>
+    <div className="login-container">
       <h2>Login</h2>
-      <label>Email: </label>
-      <input value={email} onChange={(e) => setEmail(e.target.value)} required /><br />
-      <label>Password: </label>
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /><br />
-      <button type="submit">Login</button>
-    </form>
+      {error && <div className="error-message">{error}</div>}
+      <form onSubmit={handleLogin} className="login-form">
+        <label>Email: </label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="input-field"
+          required
+        />
+        <br />
+        <label>Password: </label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="input-field"
+          required
+        />
+        <br />
+        <button type="submit" className="submit-button">
+          Login
+        </button>
+      </form>
+    </div>
   );
 };
 
 export default LoginPage;
+
+
+
 

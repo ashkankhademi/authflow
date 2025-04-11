@@ -1,29 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-
-    if (!token) {
-      setError('No token found. Please log in.');
-      return;
-    }
-
-    axios.get('http://localhost:5000/api/auth/me', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    .then(res => {
-      setUser(res.data);
-    })
-    .catch(err => {
-      setError(err.response?.data?.message || 'Failed to fetch user info.');
-    });
+    axios
+      .get('http://localhost:5000/api/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => setUser(res.data))
+      .catch((err) => console.log(err));
   }, []);
 
   const handleLogout = () => {
@@ -31,32 +21,28 @@ const Dashboard = () => {
     window.location.href = '/';
   };
 
-  if (error) {
-    return (
-      <div>
-        <h2>Dashboard</h2>
-        <p style={{ color: 'red' }}>{error}</p>
-        <button onClick={handleLogout}>Back to Login</button>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <h2>Dashboard</h2>
-      {user ? (
-        <>
-          <p>Welcome, <strong>{user.name}</strong>! 🎉</p>
-          <button onClick={handleLogout}>Logout</button>
-        </>
-      ) : (
-        <p>Loading user info...</p>
-      )}
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-md w-96">
+        <h2 className="text-2xl mb-4">Dashboard</h2>
+        {user ? (
+          <p className="text-gray-700">Welcome, {user.name}!</p>
+        ) : (
+          <p className="text-gray-500">Loading...</p>
+        )}
+        <button
+          onClick={handleLogout}
+          className="w-full py-2 bg-red-500 text-white rounded mt-4 hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 };
 
 export default Dashboard;
+
 
 
 
