@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Input, Button, Form, Alert } from 'antd';
 import axios from 'axios';
 
 const RegisterPage = () => {
@@ -10,53 +9,55 @@ const RegisterPage = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setError(''); // Reset error message
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', {
-        name,
-        email,
-        password,
-      });
-      console.log('Register success:', res.data);
-      alert('✅ Registration successful');
+      const response = await axios.post('http://localhost:5000/api/auth/register', { name, email, password });
+      console.log(response.data);
+      alert('Registration successful! You can now log in.');
+      window.location.href = '/'; // Redirect to login page
     } catch (err) {
-      console.error('Register error:', err.response?.data?.message || err.message);
-      setError('❌ Registration failed');
+      console.error(err);
+      setError('Registration failed! Please try again.');
     }
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: '0 auto', padding: 20 }}>
+    <div style={{ maxWidth: 400, margin: '0 auto', padding: '20px' }}>
       <h2>Register</h2>
-      {error && <Alert message={error} type="error" showIcon />}
-      <Form onSubmit={handleRegister}>
-        <Form.Item label="Name">
-          <Input 
-            value={name} 
-            onChange={(e) => setName(e.target.value)} 
-            required 
-          />
-        </Form.Item>
-        <Form.Item label="Email">
-          <Input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            required 
-          />
-        </Form.Item>
-        <Form.Item label="Password">
-          <Input.Password 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-          />
-        </Form.Item>
-        <Button type="primary" htmlType="submit" block>
-          Register
-        </Button>
-      </Form>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <form onSubmit={handleRegister}>
+        <label>Name:</label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <br />
+        <label>Email:</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <br />
+        <label>Password:</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <br />
+        <button type="submit">Register</button>
+      </form>
     </div>
   );
 };
 
 export default RegisterPage;
+
+
+
+
